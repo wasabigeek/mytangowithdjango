@@ -1,0 +1,61 @@
+{% extends 'rango/base.html' %}
+
+{% block title %}{{ category_name }}{% endblock %}
+
+{% block body_block %}
+<div class="hero-unit">
+	<h1>{{ category_name }}</h1>
+
+	<div class="container">
+	{% if category %}
+		<div id = "pages">
+		{% if pages %}
+			{% include "rango/page_list.html" %}
+		{% else %}
+			<strong>There are no pages present.</strong>
+		{% endif %}
+		</div>
+		{% if user.is_authenticated %}
+			<a href = "/rango/category/{{ category_name_url }}/add_page/">Add a Page</a>
+		{% endif %}
+	{% else %}
+		<strong>The specified category {{ category_name }} does not exist.</strong>
+	{% endif %}
+	</div>
+	<!--/container-->
+	<div class="container-fluid">
+		<p>Search for a page</p>
+		<form class="form-signin span8" id="user_form" method="post" action="/rango/category/{{ category_name_url }}/">
+			{% csrf_token %}
+			<input type="text" size="50" name="query" value="" id="query" />
+			<input class="btn btn-primary" type="submit" name="submit" value="Search" />
+			<br />
+		</form>
+	</div>
+	<!--/container-->
+	<div class ="container-fluid;">
+	{% if result_list %}
+		<ol>
+		{% for result in result_list %}
+			<li>
+				<strong><a href="{{ result.link }}">{{ result.title }}</a></strong><br />
+				<em>{{ result.summary }}</em>
+				{% if user.is_authenticated %}
+					<button id ="add_page" data-catid="{{ category.id }}" data-title="{{ result.title }}" data-url = "{{ result.link }}" class = "rango-add btn btn-mini btn-info" type = "button">Add</button>
+				{% endif %}
+			</li>
+		{% endfor %}
+		</ol>
+	{% endif %}
+	</div>
+	<!--/container-->
+	<div>
+		<p>
+			<b id="like_count">{{ category.likes }}</b> people like this category
+			{% if user.is_authenticated %}
+				<button id="likes" data-catid="{{ category.id }}" class="btn btn-mini btn-primary" type="button">Like</button>
+			{% endif %}
+		</p>
+	</div>
+</div>
+{% endblock %}
